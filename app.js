@@ -1,4 +1,4 @@
-const LIMIT = 10;
+const LIMIT = 30;
 const STORAGE_KEY = 'pokedex-owned';
 const GENERATIONS = [
   { id: 1, label: '1ª Geração (Kanto)', start: 1, end: 151 },

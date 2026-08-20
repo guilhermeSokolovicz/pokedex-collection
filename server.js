@@ -35,7 +35,7 @@ app.get('/api/generations', (req, res) => {
 
 app.get('/api/pokemon', async (req, res) => {
   try {
-    const limit = Number(req.query.limit) || 10;
+    const limit = Number(req.query.limit) || 30;
     const offset = Number(req.query.offset) || 0;
     const generationId = Number(req.query.generation) || 1;
     const generation = getGenerationRange(generationId);

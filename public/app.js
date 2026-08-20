@@ -1,4 +1,4 @@
-const LIMIT = 10;
+const LIMIT = 30;
 const STORAGE_KEY = 'pokedex-owned';
 
 const generationSelect = document.getElementById('generationSelect');
