@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PokeDex</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Coleção</p>
+        <h1>PokeDex</h1>
+      </div>
+      <div class="stats">
+        <span id="ownedCount">0 Pokémons</span>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="controls">
+        <label for="generationSelect">
+          Geração
+          <select id="generationSelect"></select>
+        </label>
+      </section>
+
+      <section id="pokemonList" class="pokemon-grid" aria-live="polite"></section>
+
+      <nav class="pagination" aria-label="Paginação dos pokémons">
+        <button id="prevButton" type="button">Anterior</button>
+        <span id="pageLabel">Página 1</span>
+        <button id="nextButton" type="button">Próxima</button>
+      </nav>
+    </main>
+
+    <template id="pokemonCardTemplate">
+      <article class="pokemon-card">
+        <label class="pokemon-check">
+          <input type="checkbox" />
+          <span>Tenho</span>
+        </label>
+        <img alt="" class="pokemon-image" />
+        <div class="pokemon-info">
+          <span class="pokemon-number"></span>
+          <h2 class="pokemon-name"></h2>
+        </div>
+      </article>
+    </template>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
