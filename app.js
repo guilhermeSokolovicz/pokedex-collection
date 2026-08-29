@@ -174,10 +174,131 @@ nextButton.addEventListener('click', async () => {
   await fetchPokemonPage();
 });
 
+// ----- import / export helpers -----
+
+const exportOwned = () => {
+  const ids = Object.keys(state.owned)
+    .map((k) => Number(k))
+    .filter(Number.isInteger)
+    .sort((a, b) => a - b);
+  const text = ids.join('\n');
+  const blob = new Blob([text], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'pokedex-owned.txt';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+};
+
+const openImportModal = () => {
+  const modal = document.getElementById('importModal');
+  if (!modal) return;
+  modal.setAttribute('aria-hidden', 'false');
+};
+
+const closeImportModal = () => {
+  const modal = document.getElementById('importModal');
+  if (!modal) return;
+  modal.setAttribute('aria-hidden', 'true');
+};
+
+const importFromText = (text) => {
+  if (!text) return { imported: 0, invalid: 0 };
+  const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const ids = [];
+  let invalid = 0;
+  for (const line of lines) {
+    const m = line.match(/(\d+)/);
+    if (m) {
+      const id = Number(m[1]);
+      if (Number.isInteger(id) && id > 0) ids.push(id);
+      else invalid++;
+    } else {
+      invalid++;
+    }
+  }
+
+  const uniqueIds = Array.from(new Set(ids));
+  uniqueIds.forEach((id) => {
+    if (!state.owned[id]) {
+      state.owned[id] = {
+        id,
+        // temporary name (will try to fetch real name later)
+        name: `#${id}`,
+        image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`
+      };
+    }
+  });
+
+  saveOwned();
+
+  // fetch real names in background
+  fetchNamesForIds(uniqueIds).catch(() => {});
+
+  return { imported: uniqueIds.length, invalid };
+};
+
+const fetchNamesForIds = async (ids) => {
+  const fetches = ids.map((id) =>
+    fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).then((r) => {
+      if (!r.ok) throw new Error('not found');
+      return r.json();
+    })
+  );
+
+  const results = await Promise.allSettled(fetches);
+  let updated = 0;
+  results.forEach((res, idx) => {
+    if (res.status === 'fulfilled') {
+      const id = ids[idx];
+      const data = res.value;
+      if (data && state.owned[id]) {
+        state.owned[id].name = data.name;
+        state.owned[id].image = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
+        updated++;
+      }
+    }
+  });
+
+  if (updated > 0) saveOwned();
+};
+
+// bind import/export UI
+const setupImportExportUI = () => {
+  const exportBtn = document.getElementById('exportButton');
+  const importBtn = document.getElementById('importButton');
+  const modal = document.getElementById('importModal');
+  const closeBtn = document.getElementById('closeImport');
+  const doImportBtn = document.getElementById('doImport');
+  const textarea = document.getElementById('importTextarea');
+
+  if (exportBtn) exportBtn.addEventListener('click', exportOwned);
+  if (importBtn) importBtn.addEventListener('click', openImportModal);
+  if (closeBtn) closeBtn.addEventListener('click', closeImportModal);
+  if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeImportModal(); });
+  if (doImportBtn && textarea) {
+    doImportBtn.addEventListener('click', () => {
+      const text = textarea.value;
+      const result = importFromText(text);
+      alert(`Importados: ${result.imported}. Linhas inválidas: ${result.invalid}`);
+      textarea.value = '';
+      closeImportModal();
+      // re-render current page after import
+      renderOwnedCounter();
+      populateGenerationOptions();
+      fetchPokemonPage();
+    });
+  }
+};
+
 const init = async () => {
   loadOwned();
   renderOwnedCounter();
   populateGenerationOptions();
+  setupImportExportUI();
   await fetchPokemonPage();
 };
 

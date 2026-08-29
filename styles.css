@@ -103,6 +103,52 @@ h1 {
   gap: 16px;
 }
 
+.controls-actions {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* modal for import */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-overlay[aria-hidden="false"] {
+  display: flex;
+}
+
+.modal {
+  background: #fff;
+  color: #0f172a;
+  border-radius: 12px;
+  padding: 18px;
+  width: min(720px, 94%);
+  box-shadow: 0 20px 40px rgba(2,6,23,0.4);
+}
+
+.modal textarea {
+  width: 100%;
+  font-family: monospace;
+  font-size: 0.95rem;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  resize: vertical;
+}
+
+.modal-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
 .controls label {
   display: flex;
   align-items: center;

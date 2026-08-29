@@ -26,8 +26,24 @@
           Geração
           <select id="generationSelect"></select>
         </label>
-        <a class="secondary-button link-button" href="/print.html" target="_blank" rel="noreferrer">Lista de faltantes</a>
+        <div class="controls-actions">
+          <button id="exportButton" class="secondary-button">Exportar</button>
+          <button id="importButton" class="secondary-button">Importar</button>
+          <a class="secondary-button link-button" href="/print.html" target="_blank" rel="noreferrer">Lista de faltantes</a>
+        </div>
       </section>
+
+      <!-- Import modal -->
+      <div id="importModal" class="modal-overlay" aria-hidden="true">
+        <div class="modal">
+          <h3>Importar Pokémons (um número por linha)</h3>
+          <textarea id="importTextarea" rows="10" placeholder="Exemplo:\n1\n4\n7"></textarea>
+          <div class="modal-actions">
+            <button id="doImport" class="secondary-button">Importar</button>
+            <button id="closeImport" class="secondary-button">Fechar</button>
+          </div>
+        </div>
+      </div>
 
       <section id="pokemonList" class="pokemon-grid" aria-live="polite"></section>
 
