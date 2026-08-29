@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pokémons faltantes para impressão</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body class="print-page">
+    <header class="print-header">
+      <div>
+        <p class="eyebrow">Coleção</p>
+        <h1>Pokémons faltantes</h1>
+      </div>
+      <div class="print-actions">
+        <button id="printButton" type="button" class="secondary-button">Imprimir</button>
+        <a href="/" class="secondary-button link-button">Voltar</a>
+      </div>
+    </header>
+
+    <main class="print-container">
+      <p id="summaryCount" class="print-summary">0 Pokémons faltando</p>
+      <section id="missingList" class="missing-grid" aria-live="polite"></section>
+    </main>
+
+    <script src="/print.js"></script>
+  </body>
+</html>

@@ -1,5 +1,17 @@
 const LIMIT = 30;
 const STORAGE_KEY = 'pokedex-owned';
+const GENERATIONS = [
+  { id: 1, label: '1ª Geração (Kanto)', start: 1, end: 151 },
+  { id: 2, label: '2ª Geração (Johto)', start: 152, end: 251 },
+  { id: 3, label: '3ª Geração (Hoenn)', start: 252, end: 386 },
+  { id: 4, label: '4ª Geração (Sinnoh)', start: 387, end: 493 },
+  { id: 5, label: '5ª Geração (Unova)', start: 494, end: 649 },
+  { id: 6, label: '6ª Geração (Kalos)', start: 650, end: 721 },
+  { id: 7, label: '7ª Geração (Alola)', start: 722, end: 809 },
+  { id: 8, label: '8ª Geração (Galar e Hisui)', start: 810, end: 905 },
+  { id: 9, label: '9ª Geração (Paldea)', start: 906, end: 1025 },
+  { id: 10, label: '10ª Geração (Winds and Waves)', start: 1026, end: 1026 }
+];
 
 const generationSelect = document.getElementById('generationSelect');
 const pokemonList = document.getElementById('pokemonList');
@@ -14,6 +26,15 @@ const state = {
   offset: 0,
   count: 0,
   owned: {}
+};
+
+const getGeneration = (generationId) => {
+  return GENERATIONS.find((generation) => generation.id === Number(generationId)) || GENERATIONS[0];
+};
+
+const getPokemonIdFromUrl = (url) => {
+  const match = url.match(/\/pokemon\/(\d+)\/?$/);
+  return match ? Number(match[1]) : null;
 };
 
 const loadOwned = () => {
@@ -33,6 +54,12 @@ const saveOwned = () => {
 const renderOwnedCounter = () => {
   const total = Object.keys(state.owned).length;
   ownedCount.textContent = `${total} Pokémon${total === 1 ? '' : 's'}`;
+};
+
+const scrollToTop = () => {
+  if (typeof window !== 'undefined' && window.scrollTo) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 };
 
 const updatePagination = () => {
@@ -85,33 +112,47 @@ const renderPokemon = (pokemonListData) => {
   });
 };
 
-const fetchGenerations = async () => {
-  const response = await fetch('/api/generations');
-  const generations = await response.json();
-
-  generationSelect.innerHTML = generations
-    .map(
-      (generation) =>
-        `<option value="${generation.id}">${generation.label}</option>`
-    )
-    .join('');
-
+const populateGenerationOptions = () => {
+  generationSelect.innerHTML = GENERATIONS.map(
+    (generation) => `<option value="${generation.id}">${generation.label}</option>`
+  ).join('');
   generationSelect.value = String(state.generation);
 };
 
 const fetchPokemonPage = async () => {
-  const response = await fetch(
-    `/api/pokemon?generation=${state.generation}&offset=${state.offset}&limit=${LIMIT}`
-  );
+  try {
+    const response = await fetch('https://pokeapi.co/api/v2/pokemon?limit=10000&offset=0');
+    if (!response.ok) {
+      throw new Error('Erro ao buscar os Pokémons');
+    }
 
-  if (!response.ok) {
-    throw new Error('Erro ao carregar os pokémons');
+    const data = await response.json();
+    const generation = getGeneration(state.generation);
+
+    const generationPokemon = (data.results || [])
+      .map((pokemon) => {
+        const id = getPokemonIdFromUrl(pokemon.url);
+        return {
+          id,
+          name: pokemon.name,
+          image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`,
+          url: pokemon.url
+        };
+      })
+      .filter((pokemon) => Number.isInteger(pokemon.id))
+      .filter((pokemon) => pokemon.id >= generation.start && pokemon.id <= generation.end);
+
+    const paginated = generationPokemon.slice(state.offset, state.offset + LIMIT);
+
+    state.count = generationPokemon.length;
+    renderPokemon(paginated);
+    updatePagination();
+    scrollToTop();
+  } catch (error) {
+    pokemonList.innerHTML = '<p>Não foi possível carregar os Pokémons no momento.</p>';
+    updatePagination();
+    scrollToTop();
   }
-
-  const data = await response.json();
-  state.count = data.count;
-  renderPokemon(data.results || []);
-  updatePagination();
 };
 
 const updateGeneration = async () => {
@@ -136,7 +177,7 @@ nextButton.addEventListener('click', async () => {
 const init = async () => {
   loadOwned();
   renderOwnedCounter();
-  await fetchGenerations();
+  populateGenerationOptions();
   await fetchPokemonPage();
 };
 

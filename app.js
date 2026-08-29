@@ -56,6 +56,12 @@ const renderOwnedCounter = () => {
   ownedCount.textContent = `${total} Pokémon${total === 1 ? '' : 's'}`;
 };
 
+const scrollToTop = () => {
+  if (typeof window !== 'undefined' && window.scrollTo) {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+};
+
 const updatePagination = () => {
   const currentPage = Math.floor(state.offset / LIMIT) + 1;
   const totalPages = Math.max(1, Math.ceil(state.count / LIMIT));
@@ -133,17 +139,19 @@ const fetchPokemonPage = async () => {
           url: pokemon.url
         };
       })
-      .filter((pokemon) => pokemon.id >= generation.start && pokemon.id <= generation.end)
-      .filter((pokemon) => Number.isInteger(pokemon.id));
+      .filter((pokemon) => Number.isInteger(pokemon.id))
+      .filter((pokemon) => pokemon.id >= generation.start && pokemon.id <= generation.end);
 
     const paginated = generationPokemon.slice(state.offset, state.offset + LIMIT);
 
     state.count = generationPokemon.length;
     renderPokemon(paginated);
     updatePagination();
+    scrollToTop();
   } catch (error) {
     pokemonList.innerHTML = '<p>Não foi possível carregar os Pokémons no momento.</p>';
     updatePagination();
+    scrollToTop();
   }
 };
 

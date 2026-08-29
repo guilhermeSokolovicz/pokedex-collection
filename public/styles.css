@@ -41,6 +41,32 @@ input {
   padding: 24px 20px 12px;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.secondary-button,
+.link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.link-button {
+  background: rgba(245, 158, 11, 0.18);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
 .eyebrow {
   margin: 0;
   color: var(--accent);
@@ -70,6 +96,10 @@ h1 {
 
 .controls {
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .controls label {
@@ -85,6 +115,99 @@ h1 {
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: var(--panel-alt);
   color: var(--text);
+}
+
+.print-page {
+  background: #f8fafc;
+  color: #111827;
+}
+
+.print-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px 12px;
+}
+
+.print-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.print-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.print-summary {
+  margin: 0 0 20px;
+  color: #334155;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.missing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.print-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 200px;
+  aspect-ratio: 63 / 88;
+  border-radius: 18px;
+  padding: 18px 12px 12px;
+  border: 2px solid #e2e8f0;
+  background: linear-gradient(180deg, #fefefe 0%, #f8fafc 100%);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+  color: #0f172a;
+}
+
+.print-card::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.5);
+  pointer-events: none;
+}
+
+.print-number {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  justify-content: flex-start;
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  color: #475569;
+}
+
+.print-name {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  text-align: center;
+  text-transform: capitalize;
+  font-size: clamp(0.9rem, 1.2vw, 1.2rem);
+  line-height: 1.2;
+}
+
+.missing-empty {
+  padding: 30px 20px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #334155;
+  text-align: center;
+  font-weight: 700;
 }
 
 .pokemon-grid {
@@ -187,8 +310,51 @@ h1 {
     gap: 12px;
   }
 
+  .controls {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   .controls label {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@page {
+  size: A4 portrait;
+  margin: 8mm;
+}
+
+@media print {
+  body {
+    background: #fff;
+  }
+
+  .print-page {
+    background: #fff;
+  }
+
+  .print-header {
+    padding-top: 0;
+  }
+
+  .print-actions,
+  .secondary-button,
+  .link-button {
+    display: none !important;
+  }
+
+  .print-summary {
+    margin-bottom: 8mm;
+  }
+
+  .missing-grid {
+    gap: 6mm;
+  }
+
+  .print-card {
+    box-shadow: none;
+    break-inside: avoid;
   }
 }
